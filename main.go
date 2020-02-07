@@ -13,13 +13,18 @@ import (
 )
 
 func main() {
+	if len(os.Args) < 2 {
+		fmt.Println("source is not provided")
+	}
+	source := os.Args[1]
+
 	dir, err := ioutil.TempDir("", "")
 	if err != nil {
 		panic(err)
 	}
 	defer os.RemoveAll(dir)
 
-	cmd := exec.Command("git", "clone", "https://github.com/ThreeDotsLabs/watermill", dir)
+	cmd := exec.Command("git", "clone", source, dir)
 	cmd.Dir = dir
 	err = cmd.Run()
 	if err != nil {
