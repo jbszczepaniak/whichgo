@@ -22,6 +22,7 @@ var gitEnvNoPrompt = append(os.Environ(), "GIT_TERMINAL_PROMPT=0")
 
 // what is the type of given source?
 func whatType(source string) sourceType {
+	// if git ls-remote succeeds there is 100% certainty that it is git repo.
 	cmd := exec.Command("git", "ls-remote", source)
 	cmd.Env = gitEnvNoPrompt
 	err := cmd.Run()
@@ -43,6 +44,25 @@ func main() {
 	case dir:
 	case mod:
 	}
+
+
+}
+
+// Source represents "a thing" for which it will be figured out, what go version is used
+// or go version*s* *are* used.
+type Source interface {
+	// Validate validates whether given thing is actually this type.
+	Validate(string) error
+	// GoVer returns versions used in given thing
+	GoVer(string)
+}
+/// ^ is this interface too shallow? Shouldn't GoVer validate on it's own?
+
+func isMod(source string) {
+	// check whether it is go module, or not
+}
+
+func handleMod(source string) {
 
 
 }
