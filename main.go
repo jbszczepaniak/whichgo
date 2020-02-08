@@ -11,6 +11,25 @@ import (
 	"path/filepath"
 	"strings"
 )
+type sourceType string
+const (
+	git sourceType = "git repository"
+	dir sourceType = "directory"
+	mod sourceType = "go module"
+)
+
+var gitEnvNoPrompt = append(os.Environ(), "GIT_TERMINAL_PROMPT=0")
+
+// what is the type of given source?
+func whatType(source string) sourceType {
+	cmd := exec.Command("git", "ls-remote", source)
+	cmd.Env = gitEnvNoPrompt
+	err := cmd.Run()
+	if err == nil {
+		return git
+	}
+	panic("not a git repo, or do not have permissions")
+}
 
 func main() {
 	if len(os.Args) < 2 {
@@ -18,6 +37,17 @@ func main() {
 	}
 	source := os.Args[1]
 
+	switch whatType(source) {
+	case git:
+		handleGit(source)
+	case dir:
+	case mod:
+	}
+
+
+}
+
+func handleGit(source string) {
 	dir, err := ioutil.TempDir("", "")
 	if err != nil {
 		panic(err)
